@@ -1,0 +1,5 @@
+reader_cfg:
+    reader_cls: !!python/name:io.StringIO
+writer_cfg:
+    writer_cls: !!python/name:io.StringIO
+
