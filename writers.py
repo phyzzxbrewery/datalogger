@@ -44,12 +44,12 @@ class CSVWriter(Writer):
 			if not path.exists(testpath):
 				mkdir(testpath)
 
-	def __init__(self,dataset_name,basedir,filename,separator=',',filters=[]):
+	def __init__(self,description,basedir,filename,separator=';',filters=[]):
 		super().__init__(filters = filters)
-		logger.debug(f"Setting {dataset_name} and {filename}...")
+		logger.debug(f"Setting {description} and {filename}...")
 		self.basedir = basedir
 		self.__check_basedir(basedir)
-		self.name = dataset_name
+		self.name = description
 		self.basename = filename
 		self.separator = separator 
 		self.filename = path.join(self.basedir,'1_'+filename)
@@ -60,6 +60,7 @@ class CSVWriter(Writer):
 		if not path.exists(self.filename):
 			with open(self.filename,'w') as f:
 				logger.info(f"Create new file {self.filename}")
+				f.write(f'"{self.description}"'+'\n')
 				f.write(self.__convert(self.dataset,True))
 				f.write(self.__convert(self.dataset))
 		else:
