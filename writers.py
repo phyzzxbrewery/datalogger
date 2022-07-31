@@ -1,5 +1,5 @@
 import logging, json
-from os import path
+from os import path, mkdir
 from utils import PlausiChecker
 logger = logging.getLogger(__name__)
 
@@ -35,13 +35,24 @@ class Writer(object):
 # C S V  W r i t e r 
 class CSVWriter(Writer):
 
-	def __init__(self,dataset_name,filename,separator=',',filters=[]):
+	@staticmethod
+	def __check_basedir(pathname):
+		chunks = path.split(pathname)
+		testpath = ''
+		for name in chunks:
+			testpath = path.join(testpath,name)
+			if not path.exists(testpath):
+				mkdir(testpath)
+
+	def __init__(self,dataset_name,basedir,filename,separator=',',filters=[]):
 		super().__init__(filters = filters)
 		logger.debug(f"Setting {dataset_name} and {filename}...")
+		self.basedir = basedir
+		self.__check_basedir(basedir)
 		self.name = dataset_name
 		self.basename = filename
 		self.separator = separator 
-		self.filename = '1_'+filename
+		self.filename = path.join(self.basedir,'1_'+filename)
 		self.index = 1
  
 	def _write_dataset(self):
@@ -58,7 +69,7 @@ class CSVWriter(Writer):
 			except:
 				self.index+=1
 				logger.error(f'Problem accessing {self.filename}. Writing in new file {self.index}_{self.basename}.')
-				self.filename = f'{self.index}_{self.basename}'
+				self.filename = path.join(self.basedir,f'{self.index}_{self.basename}')
 				self._write_dataset()
 
 	def __convert(self,data_dict,filter_headings=False):
