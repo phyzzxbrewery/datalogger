@@ -50,7 +50,7 @@ class CSVWriter(Writer):
 		logger.debug(f"Setting {description} and {filename}...")
 		self.basedir = basedir
 		self.__check_basedir(basedir)
-		self.name = description
+		self.description = description
 		self.basename = filename
 		self.separator = separator 
 		self.filename = path.join(self.basedir,'1_'+filename)
