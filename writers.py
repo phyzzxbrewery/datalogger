@@ -4,6 +4,7 @@ from utils import PlausiChecker
 logger = logging.getLogger(__name__)
 
 class Writer(object):
+
 	def __init__(self, filters=[]):
 		"For each filter_cfg in filters instantiate Filter and append to _filters"
 		self._filters = [PlausiChecker()]
@@ -31,7 +32,46 @@ class Writer(object):
 			raise NotImplementedError(f'No write process defined for {self}!')
 
 ##############################################################################################
-# H 5 W ri t e r 
+# C S V  W r i t e r 
+class CSVWriter(Writer):
+
+	def __init__(self,dataset_name,filename,separator=',',filters=[]):
+		super().__init__(filters = filters)
+		logger.debug(f"Setting {dataset_name} and {filename}...")
+		self.name = dataset_name
+		self.basename = filename
+		self.separator = separator 
+		self.filename = '1_'+filename
+		self.index = 1
+ 
+	def _write_dataset(self):
+		"append one frame"
+		if not path.exists(self.filename):
+			with open(self.filename,'w') as f:
+				logger.info(f"Create new file {self.filename}")
+				f.write(self.__convert(self.dataset,True))
+				f.write(self.__convert(self.dataset))
+		else:
+			try:
+				with open(self.filename,'a') as f:
+					f.write(self.__convert(self.dataset))
+			except:
+				self.index+=1
+				logger.error(f'Problem accessing {self.filename}. Writing in new file {self.index}_{self.basename}.')
+				self.filename = f'{self.index}_{self.basename}'
+				self._write_dataset()
+
+	def __convert(self,data_dict,filter_headings=False):
+		if filter_headings:
+			headings = [f'{k} ({v["unit"]})' for k,v in data_dict.items()]
+			return self.separator.join(headings) + "\n"
+		else:
+			datastr = [v['value'] for v in data_dict.values()]
+			return self.separator.join(datastr) + "\n"
+			
+ 
+##############################################################################################
+# H 5 W r i t e r 
 class H5Writer(Writer):
  
 	@staticmethod
