@@ -66,7 +66,7 @@ class CSVWriter(Writer):
 			headings = [f'{k} ({v["unit"]})' for k,v in data_dict.items()]
 			return self.separator.join(headings) + "\n"
 		else:
-			datastr = [v['value'] for v in data_dict.values()]
+			datastr = [str(v['value']) for v in data_dict.values()]
 			return self.separator.join(datastr) + "\n"
 			
  
