@@ -1,5 +1,6 @@
 import logging, json
 from os import path, mkdir
+from datetime import datetime
 from utils import PlausiChecker
 logger = logging.getLogger(__name__)
 
@@ -78,6 +79,7 @@ class CSVWriter(Writer):
 			headings = [f'{k} ({v["unit"]})' for k,v in data_dict.items()]
 			return self.separator.join(headings) + "\n"
 		else:
+			data_dict['timestamp']['value'] = datetime.fromtimestamp(data_dict['timestamp']['value']/1000).strftime('%d.%m.%Y %H:%M:%S.%f')
 			datastr = [str(v['value']) for v in data_dict.values()]
 			return self.separator.join(datastr) + "\n"
 			
